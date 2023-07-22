@@ -21,8 +21,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
     const ctx = canvas.getContext('2d');
     const promises: Promise<void>[] = [];
 
-    console.log(canvas, ctx);
-
     for (const structure of structures) {
       const url = `https://raw.githubusercontent.com/PlaceDE-Official/pixel/main/pictures/${structure.file}`;
 
