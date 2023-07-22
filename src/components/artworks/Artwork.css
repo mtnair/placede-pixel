@@ -7,6 +7,10 @@
   border-radius: 4px;
 }
 
+.artwork-image {
+  overflow: auto;
+}
+
 .artwork-image img {
   max-height: 100px;
 }

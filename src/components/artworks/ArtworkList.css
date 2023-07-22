@@ -1,7 +1,3 @@
-.artwork-col {
-  max-height: 100%;
-}
-
 .artwork-list {
   display: flex;
   flex-flow: column nowrap;

@@ -12,7 +12,7 @@ interface ArtworkListProps {
 
 const ArtworkList: React.FC<ArtworkListProps> = ({ structures }) => {
   return (
-    <Col md='3' className='artwork-col'>
+    <Col md='3'>
       <div className='artwork-list'>
         {structures
           .sort((a, b) => b.priority - a.priority)

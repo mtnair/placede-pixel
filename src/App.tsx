@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import toml from 'toml';
@@ -16,7 +15,6 @@ import Metadata from './components/metadata/Metadata';
 
 import './App.css';
 
-// const targetConfigUrl = 'https://github.com/PlaceDE-Official/pixel/blob/main/target_config.toml';
 const targetConfigUrl =
   'https://raw.githubusercontent.com/PlaceDE-Official/pixel/main/target_config.toml';
 

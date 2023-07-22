@@ -13,3 +13,7 @@ body {
 .pixel-container > .row {
   height: 100%;
 }
+
+.pixel-container > .row > div {
+  max-height: calc(100% - 56px);
+}
