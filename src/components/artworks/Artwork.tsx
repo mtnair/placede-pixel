@@ -16,6 +16,8 @@ const Artwork: React.FC<ArtworkProps> = ({ structure }) => {
   const [targetConfig, setTargetConfig] = useTargetConfig();
 
   function select() {
+    if (structure.disabled) return;
+
     targetConfig.structure.forEach((s) => (s.selected = false));
     const s = targetConfig.structure.find(
       (s) => s.name === structure.name && s.file === structure.file
@@ -29,8 +31,12 @@ const Artwork: React.FC<ArtworkProps> = ({ structure }) => {
     setTargetConfig(targetConfig);
   }
 
+  const classes = ['artwork'];
+  if (structure.selected) classes.push('selected');
+  if (structure.disabled) classes.push('disabled');
+
   return (
-    <Row className={'artwork' + (structure.selected ? ' selected' : '')} onClick={select}>
+    <Row className={classes.join(' ')} onClick={select}>
       <Col md='4' className='artwork-image'>
         <Image
           src={`https://raw.githubusercontent.com/PlaceDE-Official/pixel/main/pictures/${structure.file}`}
@@ -42,6 +48,11 @@ const Artwork: React.FC<ArtworkProps> = ({ structure }) => {
         <p>
           X: {structure.startx}, Y: {structure.starty}
         </p>
+        {structure.disabled && (
+          <p>
+            <em>Disabled</em>
+          </p>
+        )}
       </Col>
     </Row>
   );

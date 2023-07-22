@@ -1,4 +1,13 @@
 .metadata {
+  height: 100%;
+  overflow: auto;
+
   border: 1px solid grey;
   border-radius: 4px;
+
+  padding: 16px;
+}
+
+.metadata pre {
+  overflow: visible;
 }

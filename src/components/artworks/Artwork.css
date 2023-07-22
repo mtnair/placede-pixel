@@ -1,7 +1,5 @@
 .artwork {
-  /* display: flex;
-  flex-flow: row nowrap;
-  gap: 8px; */
+  margin: 0 !important;
 
   border: 1px solid grey;
   border-radius: 4px;
@@ -11,6 +9,9 @@
 
 .artwork.selected {
   border: 2px solid green;
+}
+.artwork.disabled {
+  border: 1px dashed red;
 }
 
 .artwork-image {

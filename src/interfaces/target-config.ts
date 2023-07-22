@@ -10,11 +10,13 @@ export interface TargetConfig {
 }
 
 export interface Structure {
-  file: string;
   name: string;
-  priority: number;
+  file: string;
   startx: number;
   starty: number;
+  priority: number;
+  overlay_only?: boolean
+  disabled?: boolean
 
   selected?: boolean;
 }

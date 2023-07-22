@@ -9,11 +9,11 @@ body {
   height: 100%;
 }
 
-.pixel-container,
-.pixel-container > .row {
-  height: 100%;
+.pixel-container {
+  height: calc(100% - 56px);
 }
 
+.pixel-container > .row,
 .pixel-container > .row > div {
-  max-height: calc(100% - 56px);
+  height: 100%;
 }

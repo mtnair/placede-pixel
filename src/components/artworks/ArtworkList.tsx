@@ -16,6 +16,7 @@ const ArtworkList: React.FC<ArtworkListProps> = () => {
       <div className='artwork-list'>
         {targetConfig.structure
           .sort((a, b) => b.priority - a.priority)
+          .sort((a, b) => (a.disabled ? 1 : b.disabled ? -1 : 0))
           .map((s, id) => (
             <Artwork key={id} structure={s} />
           ))}

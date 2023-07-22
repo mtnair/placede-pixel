@@ -22,7 +22,7 @@ interface CanvasImage {
 }
 
 const Canvas: React.FC<CanvasProps> = () => {
-  const [targetConfig] = useTargetConfig();
+  const [targetConfig, setTargetConfig] = useTargetConfig();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dragok, setDragok] = useState(false);
   const [images, setImages] = useState<CanvasImage[]>([]);
@@ -57,6 +57,8 @@ const Canvas: React.FC<CanvasProps> = () => {
     const promises: Promise<CanvasImage>[] = [];
 
     for (const structure of targetConfig.structure) {
+      if (structure.disabled) continue;
+
       promises.push(
         new Promise((resolve, reject) => {
           const image = new Image();
@@ -159,6 +161,15 @@ const Canvas: React.FC<CanvasProps> = () => {
         if (image.isDragging) {
           image.x = mx - image.dragX;
           image.y = my - image.dragY;
+
+          const structure = targetConfig.structure.find(
+            (s) => s.name === image.name && s.file === image.file
+          );
+
+          if (structure) {
+            structure.startx = image.x - targetConfig['add-x'];
+            structure.starty = image.y - targetConfig['add-y'];
+          }
         }
       }
 
@@ -175,9 +186,11 @@ const Canvas: React.FC<CanvasProps> = () => {
     // clear all the dragging flags
     setDragok(false);
 
-    for (const structure of images) {
-      structure.isDragging = false;
+    for (const image of images) {
+      image.isDragging = false;
     }
+
+    setTargetConfig(targetConfig);
   }
 
   return (
