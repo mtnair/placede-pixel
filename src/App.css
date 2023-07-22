@@ -1,0 +1,15 @@
+body {
+  height: 100vh;
+  max-height: 100vh;
+}
+
+#root {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100%;
+}
+
+.pixel-container,
+.pixel-container > .row {
+  height: 100%;
+}
