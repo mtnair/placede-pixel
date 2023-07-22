@@ -1,20 +1,20 @@
 import React from 'react';
 import Col from 'react-bootstrap/Col';
 
-import { Structure } from '../../interfaces/target-config';
+import { useTargetConfig } from '../../context';
 import Artwork from './Artwork';
 
 import './ArtworkList.css';
 
-interface ArtworkListProps {
-  structures: Structure[];
-}
+interface ArtworkListProps {}
 
-const ArtworkList: React.FC<ArtworkListProps> = ({ structures }) => {
+const ArtworkList: React.FC<ArtworkListProps> = () => {
+  const [targetConfig] = useTargetConfig();
+
   return (
     <Col md='3'>
       <div className='artwork-list'>
-        {structures
+        {targetConfig.structure
           .sort((a, b) => b.priority - a.priority)
           .map((s, id) => (
             <Artwork key={id} structure={s} />

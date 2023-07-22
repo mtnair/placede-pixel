@@ -15,4 +15,6 @@ export interface Structure {
   priority: number;
   startx: number;
   starty: number;
+
+  selected?: boolean;
 }

@@ -1,15 +1,11 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Col from 'react-bootstrap/Col';
 
-import { Structure } from '../../interfaces/target-config';
+import { useTargetConfig } from '../../context';
 
 import './Canvas.css';
 
-interface CanvasProps {
-  width: number;
-  height: number;
-  structures: Structure[];
-}
+interface CanvasProps {}
 
 interface CanvasImage {
   name: string;
@@ -22,9 +18,11 @@ interface CanvasImage {
   dragX: number;
   dragY: number;
   image: HTMLImageElement;
+  locked?: boolean;
 }
 
-const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
+const Canvas: React.FC<CanvasProps> = () => {
+  const [targetConfig] = useTargetConfig();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [dragok, setDragok] = useState(false);
   const [images, setImages] = useState<CanvasImage[]>([]);
@@ -36,8 +34,8 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    context.clearRect(0, 0, width, height);
-  }, [width, height]);
+    context.clearRect(0, 0, targetConfig.width, targetConfig.height);
+  }, [targetConfig.height, targetConfig.width]);
 
   const draw = useCallback(
     (images: CanvasImage[]) => {
@@ -49,22 +47,6 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
       clearCanvas();
 
       for (const canvasImage of images) {
-        // const image = new Image();
-
-        // image.onload = () => {
-        //   canvasImage.width = image.width;
-        //   canvasImage.height = image.height;
-
-        //   context.drawImage(image, canvasImage.x, canvasImage.y);
-        // };
-
-        // image.onerror = (e) => {
-        //   console.log('Error loading image', e);
-        // };
-
-        // image.crossOrigin = 'anonymous';
-        // image.src = `https://raw.githubusercontent.com/PlaceDE-Official/pixel/main/pictures/${canvasImage.file}`;
-
         context.drawImage(canvasImage.image, canvasImage.x, canvasImage.y);
       }
     },
@@ -72,33 +54,31 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
   );
 
   useEffect(() => {
-    // const images: CanvasImage[] = [];
     const promises: Promise<CanvasImage>[] = [];
 
-    for (const structure of structures) {
+    for (const structure of targetConfig.structure) {
       promises.push(
-        new Promise((resolve) => {
-          // if (structure.name === 'netherlands') continue;
-
+        new Promise((resolve, reject) => {
           const image = new Image();
 
           image.onload = () => {
             resolve({
               name: structure.name,
               file: structure.file,
-              x: structure.startx + 1000,
-              y: structure.starty + 500,
+              x: structure.startx + targetConfig['add-x'],
+              y: structure.starty + targetConfig['add-y'],
               isDragging: false,
               width: image.width,
               height: image.height,
               dragX: 0,
               dragY: 0,
               image: image,
+              locked: !structure.selected,
             });
           };
 
-          image.onerror = (e) => {
-            console.log('Error loading image', e);
+          image.onerror = (err) => {
+            reject(err);
           };
 
           image.crossOrigin = 'anonymous';
@@ -107,11 +87,16 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
       );
     }
 
-    Promise.all(promises).then((images) => {
-      setImages(images);
-      draw(images);
-    });
-  }, [structures, draw]);
+    Promise.all(promises).then(
+      (images) => {
+        setImages(images);
+        draw(images);
+      },
+      (err) => {
+        console.log('Error loading image(s)', err);
+      }
+    );
+  }, [draw, targetConfig]);
 
   function mouseDown(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) {
     // tell the browser we're handling this mouse event
@@ -129,17 +114,18 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
     const mx = e.clientX - offsetX;
     const my = e.clientY - offsetY;
 
-    // test each rect to see if mouse is inside
     setDragok(false);
 
+    // test each image to see if mouse is inside
     for (const image of images) {
       if (
         mx > image.x &&
         mx < image.x + image.width &&
         my > image.y &&
-        my < image.y + image.height
+        my < image.y + image.height &&
+        !image.locked
       ) {
-        // if yes, set that rects isDragging=true
+        // if yes, set that images isDragging=true
         setDragok(true);
         image.isDragging = true;
         image.dragX = mx - image.x;
@@ -166,17 +152,17 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
       const mx = e.clientX - offsetX;
       const my = e.clientY - offsetY;
 
-      // move each rect that isDragging
+      // move each image that isDragging
       // by the distance the mouse has moved
       // since the last mousemove
-      for (const structure of images) {
-        if (structure.isDragging) {
-          structure.x = mx - structure.dragX;
-          structure.y = my - structure.dragY;
+      for (const image of images) {
+        if (image.isDragging) {
+          image.x = mx - image.dragX;
+          image.y = my - image.dragY;
         }
       }
 
-      // redraw the scene with the new rect positions
+      // redraw the scene with the new image positions
       draw(images);
     }
   }
@@ -199,8 +185,8 @@ const Canvas: React.FC<CanvasProps> = ({ width, height, structures }) => {
       <div className='canvas-container'>
         <canvas
           ref={canvasRef}
-          width={width}
-          height={height}
+          width={targetConfig.width}
+          height={targetConfig.height}
           onMouseDown={mouseDown}
           onMouseMove={mouseMove}
           onMouseUp={mouseUp}

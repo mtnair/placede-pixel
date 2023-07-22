@@ -1,44 +1,17 @@
-import axios from 'axios';
-import { useEffect, useState } from 'react';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
-import toml from 'toml';
 // import Nav from 'react-bootstrap/Nav';
 // import NavDropdown from 'react-bootstrap/NavDropdown';
 import Row from 'react-bootstrap/Row';
 
-import { Structure, TargetConfig } from './interfaces/target-config';
-
 import ArtworkList from './components/artworks/ArtworkList';
 import Canvas from './components/canvas/Canvas';
 import Metadata from './components/metadata/Metadata';
+import { TargetConfigProvider } from './context';
 
 import './App.css';
 
-const targetConfigUrl =
-  'https://raw.githubusercontent.com/PlaceDE-Official/pixel/main/target_config.toml';
-
 function App() {
-  const [canvasWidth, setCanvasWidth] = useState(0);
-  const [canvasHeight, setCanvasHeight] = useState(0);
-  const [structures, setStructures] = useState<Structure[]>([]);
-
-  useEffect(() => {
-    axios.get(targetConfigUrl).then((res) => {
-      try {
-        const targetConfig: TargetConfig = toml.parse(res.data);
-
-        console.log(targetConfig);
-
-        setCanvasWidth(targetConfig.width);
-        setCanvasHeight(targetConfig.height);
-        setStructures(targetConfig.structure);
-      } catch (err) {
-        console.log(err);
-      }
-    });
-  }, []);
-
   return (
     <>
       <Navbar expand='lg' className='bg-body-tertiary'>
@@ -60,13 +33,15 @@ function App() {
           </Navbar.Collapse> */}
         </Container>
       </Navbar>
-      <Container fluid className='pixel-container'>
-        <Row className='p-3'>
-          <Canvas width={canvasWidth} height={canvasHeight} structures={structures} />
-          <ArtworkList structures={structures} />
-          <Metadata />
-        </Row>
-      </Container>
+      <TargetConfigProvider>
+        <Container fluid className='pixel-container'>
+          <Row className='p-3'>
+            <Canvas />
+            <ArtworkList />
+            <Metadata />
+          </Row>
+        </Container>
+      </TargetConfigProvider>
     </>
   );
 }
